@@ -16,6 +16,7 @@ struct SensorData {
     long long time;
     float x, y, z;
     float nx, ny, nz;
+    float qw, qx, qy, qz;
 
     static void convertFromEuler(SensorData &data);
 

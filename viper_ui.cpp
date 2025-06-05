@@ -443,7 +443,8 @@ void  viper_ui::print_pno_record(SENFRAMEDATA* pfd){
 
 //  cout<<sens<<"  "<<pfd->pno.pos[0]<<"  "<<pfd->pno.pos[1]<<"  "<<pfd->pno.pos[2]<<"  "<<pfd->pno.ori[0]<<"  "<<pfd->pno.ori[1]<<"  "<<pfd->pno.ori[2]<<"\n";
 
-    cout<<sens<<"  "<<pfd->pno.pos[0] * 25.4 <<"  "<<pfd->pno.pos[1] * 25.4 <<"  "<<pfd->pno.pos[2] * 25.4 <<"  "<<pfd->pno.ori[0]<<"  "<<pfd->pno.ori[1]<<"  "<<pfd->pno.ori[2]<<"\n";
+//    cout<<sens<<"  "<<pfd->pno.pos[0] * 25.4 <<"  "<<pfd->pno.pos[1] * 25.4 <<"  "<<pfd->pno.pos[2] * 25.4 <<"  "<<pfd->pno.ori[0]<<"  "<<pfd->pno.ori[1]<<"  "<<pfd->pno.ori[2]<<"\n";
+    cout<<sens<<", "<<pfd->pno.pos[0] <<", "<<pfd->pno.pos[1] <<", "<<pfd->pno.pos[2] <<", "<<pfd->pno.ori[3]<<", "<<pfd->pno.ori[0]<<", "<<pfd->pno.ori[1]<<", "<<pfd->pno.ori[2]<<"\n";
 
 
 
@@ -457,15 +458,20 @@ SensorData viper_ui::pno_record_to_SensorData(SENFRAMEDATA *pfd) {
     data.sensor_id = (int) sens;
     data.time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
-    data.x = pfd->pno.pos[0] * 0.254;
-    data.y = pfd->pno.pos[1] * 0.254;
-    data.z = pfd->pno.pos[2] * 0.254;
+    data.x = pfd->pno.pos[0] * 1000;
+    data.y = pfd->pno.pos[1] * 1000;
+    data.z = pfd->pno.pos[2] * 1000;
 
-    data.nx = pfd->pno.ori[0];
-    data.ny = pfd->pno.ori[1];
-    data.nz = pfd->pno.ori[2];
+//    data.nx = pfd->pno.ori[0];
+//    data.ny = pfd->pno.ori[1];
+//    data.nz = pfd->pno.ori[2];
 
-    SensorData::convertFromEuler(data);
+    data.qw = pfd->pno.ori[0];
+    data.qx = pfd->pno.ori[1];
+    data.qy = pfd->pno.ori[2];
+    data.qz = pfd->pno.ori[3];
+
+//    SensorData::convertFromEuler(data);
 
     return data;
 }

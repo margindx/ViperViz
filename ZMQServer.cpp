@@ -307,7 +307,8 @@ int ZMQServer::log() {
         std::cout << std::fixed << std::setprecision(12)
                   << received_data.time << "," << received_data.sensor_id << ","
                   << received_data.x << "," << received_data.y << "," << received_data.z << ","
-                  << received_data.nx << "," << received_data.ny << "," << received_data.nz << std::endl;
+                  << received_data.qx << "," << received_data.qy << "," << received_data.qz << "," << received_data.qw << std::endl;
+//                  << received_data.nx << "," << received_data.ny << "," << received_data.nz << std::endl;
     }
 
     return 0;

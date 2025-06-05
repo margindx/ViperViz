@@ -18,20 +18,20 @@ int main() {
 //    ZMQServer::subscribeToSensor(4);
 //    ZMQServer::consume();
 
-//    ZMQServer::verbose = false;
-//    ZMQServer::init(5555, ZMQServer::Subscriber);
-//    ZMQServer::subscribeToSensor(1);
-//    ZMQServer::subscribeToSensor(2);
-//    ZMQServer::subscribeToSensor(3);
-//    ZMQServer::subscribeToSensor(4);
-//    ZMQServer::log();
-
+    ZMQServer::verbose = false;
     ZMQServer::init(5555, ZMQServer::Subscriber);
     ZMQServer::subscribeToSensor(1);
     ZMQServer::subscribeToSensor(2);
-//    ZMQServer::subscribeToSensor(3);
-//    ZMQServer::subscribeToSensor(4);
-    PointCloudGUI::launchRealTime();
+    ZMQServer::subscribeToSensor(3);
+    ZMQServer::subscribeToSensor(4);
+    ZMQServer::log();
+
+//    ZMQServer::init(5555, ZMQServer::Subscriber);
+//    ZMQServer::subscribeToSensor(1);
+//    ZMQServer::subscribeToSensor(2);
+////    ZMQServer::subscribeToSensor(3);
+////    ZMQServer::subscribeToSensor(4);
+//    PointCloudGUI::launchRealTime();
 
     return 0;
 }
