@@ -4,9 +4,9 @@ project(viper LANGUAGES C CXX)
 find_package(PkgConfig REQUIRED)
 pkg_search_module(LIBUSB REQUIRED libusb-1.0)
 
-pkg_search_module(RAYLIB REQUIRED libraylib)
+pkg_search_module(RAYLIB REQUIRED raylib)
 
-pkg_search_module(ZEROMQ REQUIRED zeromq)
+pkg_search_module(ZEROMQ REQUIRED libzmq)
 
 
 # Add the Homebrew library path if not found automatically
@@ -14,8 +14,8 @@ if (LIBUSB_FOUND)
     message(STATUS "libusb-1.0 found: ${LIBUSB_LIBRARIES}")
 else()
     message(WARNING "libusb-1.0 not found, adding fallback paths")
-    set(LIBUSB_INCLUDE_DIRS "/opt/homebrew/Cellar/libusb/1.0.27/include/libusb-1.0")
-    set(LIBUSB_LIBRARIES "/opt/homebrew/Cellar/libusb/1.0.27/lib/libusb-1.0.dylib")
+    set(LIBUSB_INCLUDE_DIRS "/opt/homebrew/include/libusb-1.0")
+    set(LIBUSB_LIBRARIES "/opt/homebrew/lib/libusb-1.0.dylib")
 endif()
 
 # Add the Homebrew library path if not found automatically
@@ -40,8 +40,8 @@ set(CMAKE_CXX_STANDARD 17)
 #set(LIBUSB_INCLUDE_DIR /opt/homebrew/Cellar/libusb/1.0.27/include)
 #set(LIBUSB_LIB_DIR /opt/homebrew/Cellar/libusb/1.0.27/lib)
 #
-link_directories(/opt/homebrew/Cellar/libusb/1.0.27/lib)
-include_directories(/opt/homebrew/Cellar/libusb/1.0.27/include/libusb-1.0)
+link_directories(/opt/homebrew/lib)
+include_directories(/opt/homebrew/include/libusb-1.0)
 
 
 link_directories("/opt/homebrew/opt/zeromq/lib")
@@ -50,6 +50,7 @@ include_directories("/opt/homebrew/opt/zeromq/include")
 link_directories("/opt/homebrew/opt/raylib/lib")
 include_directories("/opt/homebrew/opt/raylib/include")
 
+include_directories(/opt/homebrew/include)
 
 add_executable(viper main.cpp viper_ui.h viper_ui.cpp viper_usb.h viper_usb.cpp ViperInterface.h viper_queue.h viper_queue.cpp
         ZMQServer.cpp
