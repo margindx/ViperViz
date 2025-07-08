@@ -5,6 +5,9 @@
 #include "ZMQServer.hpp"
 #include <cmath>
 #include <thread>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 zmq::context_t ZMQServer::_context;
 zmq::socket_t ZMQServer::_publisher;
@@ -17,15 +20,39 @@ std::unordered_map<std::string, std::deque<SensorData>> ZMQServer::sensorRcvMap 
 bool ZMQServer::verbose = true;
 
 std::string serializeSensorData(const SensorData &data) {
-    std::stringstream ss;
-    ss.write(reinterpret_cast<const char*>(&data), sizeof(SensorData));
-    return ss.str();
+    const json msg = {
+        {"sensor_id", data.sensor_id},
+        {"time", data.time},
+        {"x", data.x},
+        {"y", data.y},
+        {"z", data.z},
+        {"nx", data.nx},
+        {"ny", data.ny},
+        {"nz", data.nz},
+        {"qw", data.qw},
+        {"qx", data.qx},
+        {"qy", data.qy},
+        {"qz", data.qz},
+    };
+    return msg.dump();
 }
 
 SensorData deserializeSensorData(const std::string &data) {
-    SensorData sensorData{};
-    std::stringstream ss(data);
-    ss.read(reinterpret_cast<char*>(&sensorData), sizeof(SensorData));
+    auto msg = json::parse(data);
+    const SensorData sensorData {
+        msg.at("sensor_id"),
+        msg.at("time"),
+        msg.at("x"),
+        msg.at("y"),
+        msg.at("z"),
+        msg.at("nx"),
+        msg.at("ny"),
+        msg.at("nz"),
+        msg.at("qw"),
+        msg.at("qx"),
+        msg.at("qy"),
+        msg.at("qz")
+    };
     return sensorData;
 }
 
