@@ -91,20 +91,33 @@ int ZMQServer::serve() {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> acc_dis(-1.0, 1.0);
-    int sensor_id_counter = 2;
 
     // Initial conditions
-    SensorDataExtended data{};
-    data.sensor_id = sensor_id_counter;
-    data.x = data.y = data.z = 0.0;
-    data.nx = 0.0; data.ny = 0.0; data.nz = -1.0;
-    data.vx = data.vy = data.vz = 0.0;
-    data.vnx = data.vny = data.vnz = 0.0;
+    SensorData data {
+        .sensor_id = 2,
+        .time = 0,
+        .x = 0.0,
+        .y = 0.0,
+        .z = 0.0,
+        .nx = 0.0,
+        .ny = 0.0,
+        .nz = -1.0,
+        .qw = 0.0,
+        .qx = 0.0,
+        .qy = 0.0,
+        .qz = 0.0,
+    };
 
     const double dt = 0.001; // Time step in seconds
 
     if (verbose) std::cout << "Starting to serve test data..." << std::endl;
 
+    double vx = 0.0;
+    double vy = 0.0;
+    double vz = 0.0;
+    double vnx = 0.0;
+    double vny = 0.0;
+    double vnz = 0.0;
     while (true) {
         // Generate random accelerations
         double ax = 10*acc_dis(gen);
@@ -115,41 +128,47 @@ int ZMQServer::serve() {
         double anz = 5*acc_dis(gen);
 
         // Integrate velocities
-        data.vx += ax * dt;
-        data.vy += ay * dt;
-        data.vz += az * dt;
-        data.vnx += anx * dt;
-        data.vny += any * dt;
-        data.vnz += anz * dt;
+        vx += ax * dt;
+        vy += ay * dt;
+        vz += az * dt;
+        vnx += anx * dt;
+        vny += any * dt;
+        vnz += anz * dt;
 
         // Integrate positions
-        data.x += data.vx * dt;
-        data.y += data.vy * dt;
-        data.z += data.vz * dt;
-        data.nx += data.vnx * dt;
-        data.ny += data.vny * dt;
-        data.nz += data.vnz * dt;
+        data.x += vx * dt;
+        data.y += vy * dt;
+        data.z += vz * dt;
+        data.nx += vnx * dt;
+        data.ny += vny * dt;
+        data.nz += vnz * dt;
+        data.qx = data.nx;
+        data.qy = data.ny;
+        data.qz = data.nz;
+        data.qw = 1.0;
 
-        SensorDataExtended::normalizeNormal(data);
+        SensorData::normalizeNormal(data);
 
         // Update timestamp
         data.time = std::chrono::duration_cast<std::chrono::milliseconds>(
                 std::chrono::system_clock::now().time_since_epoch()
         ).count();
 
-        auto dataFinal = data.convertV();
         // Clamp position
-        dataFinal.x = fmin(fmax(-1, dataFinal.x), 1);
-        dataFinal.y = fmin(fmax(-1, dataFinal.y), 1);
-        dataFinal.z = fmin(fmax( 0, dataFinal.z), 1);
+        data.x = fmin(fmax(-1, data.x), 1);
+        data.y = fmin(fmax(-1, data.y), 1);
+        data.z = fmin(fmax( 0, data.z), 1);
 
-        publishSensorData(dataFinal);
+        publishSensorData(data);
 
-        if (verbose) std::cout << "Published sensor data: " << data.sensor_id
-                               << ", t: " << longTimeStampToIso8601(data.time)
-                               << ", p: (" << data.x << ", " << data.y << ", " << data.z << ")"
-                               << ", n: (" << data.nx << ", " << data.ny << ", " << data.nz << ")"
-                               << std::endl;
+        if (verbose) {}
+            std::cout << "Published data: "
+                      << "sensor_id: " << data.sensor_id
+                      << ", t: " << longTimeStampToIso8601(data.time)
+                      << ", p: (" << data.x << ", " << data.y << ", " << data.z << ")"
+                      << ", n: (" << data.nx << ", " << data.ny << ", " << data.nz << ")"
+                      << ", q: (" << data.qx << ", " << data.qy << ", " << data.qz << ", " << data.qw << ")"
+                      << std::endl;
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
@@ -167,11 +186,13 @@ int ZMQServer::consume() {
         SensorData received_data = topicSensorData.data;
 
         // Print received data
-        if (verbose) std::cout << "Received Topic: " << received_topic
-                               << ", Sensor ID: " << received_data.sensor_id
-                               << ", t: " << longTimeStampToIso8601(received_data.time)
-                               << ", p: (" << received_data.x << ", " << received_data.y << ", " << received_data.z << ")"
-                               << ", n: (" << received_data.nx << ", " << received_data.ny << ", " << received_data.nz << ")" << std::endl;
+        if (verbose)
+             std::cout << "Received data [topic: " << received_topic << "]: "
+                      << ", sensor_id: " << received_data.sensor_id
+                      << ", t: " << longTimeStampToIso8601(received_data.time)
+                      << ", p: (" << received_data.x << ", " << received_data.y << ", " << received_data.z << ")"
+                      << ", q: (" << received_data.qx << ", " << received_data.qy << ", " << received_data.qz << ", " << received_data.qw <<")"
+                      << std::endl;
     }
 
     return 0;
