@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.28)
+
 project(viper LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(PkgConfig REQUIRED)
 pkg_search_module(LIBUSB REQUIRED libusb-1.0)
-
 pkg_search_module(RAYLIB REQUIRED raylib)
-
 pkg_search_module(ZEROMQ REQUIRED libzmq)
-
+pkg_search_module(JSON REQUIRED nlohmann_json)
 
 # Add the Homebrew library path if not found automatically
 if (LIBUSB_FOUND)
@@ -36,36 +36,43 @@ else()
     set(ZEROMQ_LIBRARIES "/opt/homebrew/opt/zeromq/lib/libzmq.5.dylib")
 endif()
 
-set(CMAKE_CXX_STANDARD 17)
-#set(LIBUSB_INCLUDE_DIR /opt/homebrew/Cellar/libusb/1.0.27/include)
-#set(LIBUSB_LIB_DIR /opt/homebrew/Cellar/libusb/1.0.27/lib)
-#
-link_directories(/opt/homebrew/lib)
-include_directories(/opt/homebrew/include/libusb-1.0)
+if (JSON_FOUND)
+    message(STATUS "nlohmann_json found: ${JSON_INCLUDE_DIRS}")
+endif()
 
-
-link_directories("/opt/homebrew/opt/zeromq/lib")
-include_directories("/opt/homebrew/opt/zeromq/include")
-
-link_directories("/opt/homebrew/opt/raylib/lib")
-include_directories("/opt/homebrew/opt/raylib/include")
-
-include_directories(/opt/homebrew/include)
-
-add_executable(viper main.cpp viper_ui.h viper_ui.cpp viper_usb.h viper_usb.cpp ViperInterface.h viper_queue.h viper_queue.cpp
-        ZMQServer.cpp
-        ZMQServer.hpp
-        SensorData.cpp
-        SensorData.hpp
-        PointCloudGUI.cpp
-        PointCloudGUI.hpp)
+add_executable(viper
+    main.cpp
+    viper_ui.h
+    viper_ui.cpp
+    viper_usb.h
+    viper_usb.cpp
+    ViperInterface.h
+    viper_queue.h
+    viper_queue.cpp
+    ZMQServer.cpp
+    ZMQServer.hpp
+    SensorData.cpp
+    SensorData.hpp
+    PointCloudGUI.cpp
+    PointCloudGUI.hpp
+)
 # VPif.h VPif.cpp VPcmdDefs.h
 
-# Include libusb headers
-target_include_directories(viper PRIVATE ${LIBUSB_INCLUDE_DIRS} ${ZEROMQ_INCLUDE_DIRS} ${RAYLIB_INCLUDE_DIRS})
+target_include_directories(viper PRIVATE
+    ${LIBUSB_INCLUDE_DIRS}
+    ${ZEROMQ_INCLUDE_DIRS}
+    ${RAYLIB_INCLUDE_DIRS}
+    ${JSON_INCLUDE_DIRS}
+)
 
-# Link libusb libraries
-target_link_libraries(viper PRIVATE ${LIBUSB_LIBRARIES} pthread ${ZEROMQ_LIBRARIES} ${RAYLIB_LIBRARIES})
+target_link_libraries(viper PRIVATE
+    ${LIBUSB_LIBRARIES}
+    ${RAYLIB_LIBRARIES}
+    ${ZEROMQ_LIBRARIES}
+    pthread
+)
 
 # Pass additional compiler options if necessary
 target_compile_options(viper PRIVATE ${LIBUSB_CFLAGS_OTHER} ${RAYLIB_CFLAGS_OTHER})
+
+install(TARGETS viper DESTINATION bin)
