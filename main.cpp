@@ -10,7 +10,7 @@ int main() {
 
    ZMQServer::init(5555, ZMQServer::Publisher);
    ZMQServer::serve();
-x
+
 //    ZMQServer::init(5555, ZMQServer::Subscriber);
 //    ZMQServer::subscribeToSensor(1);
 //    ZMQServer::subscribeToSensor(2);
