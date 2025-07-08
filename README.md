@@ -34,3 +34,24 @@ make
 ```
 ./viper
 ```
+
+## How to run in a Docker container
+
+To run the app in a Docker container, the Docker engine must be installed on
+your system.  See [Docker documentation](https://docs.docker.com/engine/install)
+for available installation methods.
+
+Start the app with
+
+```bash
+docker compose up
+```
+
+The container exposes port 5555 that subscribers can use to access the data
+stream.
+
+Terminate the app with
+
+```bash
+docker compose down
+```
