@@ -79,7 +79,7 @@ int viper_ui::detect_input(){
         if (!is_continuous){
             rv=start_continuous_publish(&viper, false);
             if (rv!=0)
-                cout<<"Error starting continuous publishing ("<<rv<<")\n";
+                cout<<"sError starting continuous publishing ("<<rv<<")\n";
         }
         break;
 
@@ -158,10 +158,17 @@ char viper_ui::getch(){
  }
 
 
-void viper_ui::help_menu(){
+void viper_ui::help_menu() {
 
-  cout<<"\n\nEnter one of the following:\n\nS -- Start continuous publishing on port 5555 to sensor/*\nP -- Single frame of data... or stop continuous streaming\nC -- Start continuous streaming\nW -- WhoAmI command\nH -- This Menu\n^X -- Exit\n\n";
-
+    std::cout << "Enter one of the following:\n\n";
+    std::cout << "S -- Start continuous publishing on port 5555 to sensor/*\n";
+    std::cout << "P -- Single frame of data... or stop continuous streaming\n";
+    std::cout << "C -- Start continuous streaming\n";
+    std::cout << "W -- WhoAmI command\n";
+    std::cout << "F -- Start fast continuous publishing on port 5555 (publishes and prints every frame as fast as possible)\n";
+    std::cout << "H -- This Menu\n";
+    std::cout << "^X -- Exit\n\n";
+    
 }
 
 uint32_t viper_ui::CalcCrc16(uint8_t *b, uint32_t len)
