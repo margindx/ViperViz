@@ -454,7 +454,7 @@ SensorData viper_ui::pno_record_to_SensorData(SENFRAMEDATA *pfd) {
     SensorData data{};
 
     uint32_t sens = (pfd->SFinfo.bfSnum&0xff)+1;
-//    std::cout << "Sen id" << sens << ::std::endl;
+    std::cout << "Sen id" << sens << ::std::endl;
     data.sensor_id = (int) sens;
     data.time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
