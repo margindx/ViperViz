@@ -391,7 +391,7 @@ uint32_t viper_ui::start_continuous(viper_usb* pvpr){
       pqueue->push(resp_pkg,br);
      }
 
-    this_thread::sleep_for(std::chrono::milliseconds(t_o));
+    // this_thread::sleep_for(std::chrono::milliseconds(t_o));
   }
 }
 
